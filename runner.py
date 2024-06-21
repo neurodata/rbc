@@ -77,49 +77,49 @@ def main(args):
         study_path = out_path / f"{study}"
         if not study_path.exists():
             study_path.mkdir(exist_ok=True)
-    
+
         url = f"https://raw.githubusercontent.com/ReproBrainChart/{study}_BIDS/main/study-{study}_desc-participants.tsv"
         response = requests.get(url)
         reader = csv.reader(response.text.splitlines(), skipinitialspace=True)
-    
+
         with open(study_path / f"{study}_desc-participants.tsv", "w") as f:
             w = csv.writer(f)
             w.writerows(reader)
 
         # Datalad clone the datasets
         api.clone(source=f"https://github.com/ReproBrainChart/{study}_CPAC.git", git_clone_opts=["-b", "complete-pass-0.1"], path=out_path / f"{study}_CPAC", )
-    
+
     for study, study_parameter in study_parameters.items():
         # load metadata
         df = pd.read_csv(out_path / f"{study}/{study}_desc-participants.tsv", delimiter="\t")
         df = df[~df["p_factor_mcelroy_harmonized_all_samples"].isnull()]
-    
+
         print(f"Computing dynamic connectomes for {study}; Total files={len(df)}")
-    
+
         # Setup glob string
         glob_str = "*".join(
             [f"{k}-{v}" for k, v in study_parameter.items() if v is not None]
         )
         glob_str = "**/*" + glob_str + "*Mean_timeseries.1D"
-    
+
         p = out_path / f"{study}_CPAC/cpac_RBCv0"
 
         files = []
         # Loop over each row of metadata
         for _, row in df.iterrows():
             sub_path = p / f"sub-{row.participant_id}/ses-{row.session_id}"
-    
+
             # print
             tmp = list(sub_path.glob(glob_str))
-            
+
             if len(tmp) == 0:
                 continue
             else:
                 files += tmp
-    
+
         # Download all the files
-        api.get(files)
-    
+        api.get(files, dataset=out_path / f"{study}_CPAC/")
+
         for file in files:
             splits = file.name.split("_")
             if study == "HBN":
