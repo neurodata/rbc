@@ -5,11 +5,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y ssh git man git-annex
-
 RUN pip install numpy scipy datalad pandas tqdm
 
 RUN git clone https://github.com/neurodata/rbc.git && \
     cp -r rbc/* ./
+
+RUN git config --global user.name docker && \
+    git config --global user.email docker@docker.docker
 
 WORKDIR /
