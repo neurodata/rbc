@@ -88,7 +88,7 @@ def main(args):
 
     # Datalad clone the datasets
     for git_repo in git_repos:
-        api.clone(source=git_repo)
+        api.clone(source=git_repo, git_clone_opts=["-b", "complete-pass-0.1"])
     
     for study, study_parameter in study_parameters.items():
         # load metadata
@@ -104,30 +104,39 @@ def main(args):
         glob_str = "**/*" + glob_str + "*Mean_timeseries.1D"
     
         p = Path(f"./{study}_CPAC/cpac_RBCv0")
-    
+
+        files = []
         # Loop over each row of metadata
-        for _, row in tqdm(df.iterrows(), total=len(df)):
+        for _, row in df.iterrows():
             sub_path = p / f"sub-{row.participant_id}/ses-{row.session_id}"
     
             # print
-            files = list(sub_path.glob(glob_str))
-            if len(files) == 0:
+            tmp = list(sub_path.glob(glob_str))
+            
+            if len(tmp) == 0:
                 continue
+            else:
+                files += tmp
     
-            for file in files:
-                if study == "HBN":
-                    site = row.session_id[7:]
-                    tr = acquisition_times[study][site]
-                else:
-                    tr = acquisition_times[study]
+        # Download all the files
+        api.get(files)
     
-                # save file
-                sub_path =  out_path / f"sub-{row.participant_id}"
-                sub_path.mkdir(parents=True, exist_ok=True)
-                out_fpath = sub_path / file.name
-    
-                arr = compute_dynamic_connectome(file, tr=tr)
-                np.save(out_fpath, arr)
+        for file in files:
+            splits = file.name.split("_")
+            if study == "HBN":
+                site = splits[1][11:]
+                tr = acquisition_times[study][site]
+            else:
+                tr = acquisition_times[study]
+
+            # save file
+            participant_id = splits[0]
+            sub_path =  out_path / f"{participant_id}"
+            sub_path.mkdir(parents=True, exist_ok=True)
+            out_fpath = sub_path / file.name
+
+            arr = compute_dynamic_connectome(file, tr=tr)
+            np.save(out_fpath, arr)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
