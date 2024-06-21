@@ -73,15 +73,15 @@ def main(args):
     out_path = Path(args.output)
     
     for study in studies:
-        out_path = out_path / f"{study}"
-        if not out_path.exists():
-            out_path.mkdir(exist_ok=True)
+        study_path = out_path / f"{study}"
+        if not study_path.exists():
+            study_path.mkdir(exist_ok=True)
     
         url = f"https://raw.githubusercontent.com/ReproBrainChart/{study}_BIDS/main/study-{study}_desc-participants.tsv"
         response = requests.get(url)
         reader = csv.reader(response.text.splitlines(), skipinitialspace=True)
     
-        with open(out_path / f"{study}_desc-participants.tsv", "w") as f:
+        with open(study_path / f"{study}_desc-participants.tsv", "w") as f:
             w = csv.writer(f)
             w.writerows(reader)
     
