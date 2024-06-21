@@ -126,7 +126,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--output", help="output path", type=str)
+    parser.add_argument("-o", "--output", help="output path", type=str, default="/output")
     args = parser.parse_args()
 
     main(args)
