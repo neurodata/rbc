@@ -87,7 +87,7 @@ def main(args):
     
     for study, study_parameter in study_parameters.items():
         # load metadata
-        df = pd.read_csv(f"{study}/{study}_desc-participants.tsv", delimiter="\t")
+        df = pd.read_csv(out_path / f"{study}/{study}_desc-participants.tsv", delimiter="\t")
         df = df[~df["p_factor_mcelroy_harmonized_all_samples"].isnull()]
     
         print(f"Computing dynamic connectomes for {study}; Total files={len(df)}")
