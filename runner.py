@@ -130,7 +130,7 @@ def main(args):
 
             # save file
             participant_id = splits[0]
-            sub_path =  out_path / f"{participant_id}"
+            sub_path =  out_path / f"{study}/{participant_id}"
             sub_path.mkdir(parents=True, exist_ok=True)
             out_fpath = sub_path / file.name
 
