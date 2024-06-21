@@ -7,4 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends && \
 
 RUN pip install numpy scipy datalad pandas tqdm
 
+RUN git clone https://github.com/neurodata/rbc.git && \
+    cp -r rbc/* ./
+
 WORKDIR /
