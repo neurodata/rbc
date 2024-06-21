@@ -71,7 +71,8 @@ def compute_dynamic_connectome(fpath, window_length=60, tr=None):
 
 def main(args):
     out_path = Path(args.output)
-    
+
+    # Grab the metadata files
     for study in studies:
         study_path = out_path / f"{study}"
         if not study_path.exists():
@@ -84,6 +85,10 @@ def main(args):
         with open(study_path / f"{study}_desc-participants.tsv", "w") as f:
             w = csv.writer(f)
             w.writerows(reader)
+
+    # Datalad clone the datasets
+    for git_repo in git_repos:
+        api.clone(source=git_repo)
     
     for study, study_parameter in study_parameters.items():
         # load metadata
