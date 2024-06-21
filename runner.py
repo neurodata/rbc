@@ -88,7 +88,7 @@ def main(args):
 
     # Datalad clone the datasets
     for git_repo in git_repos:
-        api.clone(source=git_repo, git_clone_opts=["-b", "complete-pass-0.1"], path=out_path)
+        api.clone(source=git_repo, git_clone_opts=["-b", "complete-pass-0.1"], path=out_path / f"{study}_CPAC", )
     
     for study, study_parameter in study_parameters.items():
         # load metadata
